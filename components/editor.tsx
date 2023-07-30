@@ -1,107 +1,73 @@
 'use client'
+import { useEffect, useState } from 'react';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
+import { database } from './firebase'; // Import the Firebase database
+import { get, ref, onValue, set } from 'firebase/database';
 
-import { useState } from 'react';
-import { ChromePicker } from 'react-color';
-import Select from 'react-select';
+const toolbarOptions = [
+  ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+  ['blockquote', 'code-block'],
 
-const fontStyles = [
-  { value: 'Arial, sans-serif', label: 'Arial' },
-  { value: 'Helvetica, sans-serif', label: 'Helvetica' },
-  { value: 'Times New Roman, serif', label: 'Times New Roman' },
-  { value: 'Courier New, monospace', label: 'Courier New' },
-  { value: 'Verdana, sans-serif', label: 'Verdana' },
-  // Add more fonts as needed
+  [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+  [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+  [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+  [{ 'direction': 'rtl' }],                         // text direction
+
+  [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+  [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+  [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+  [{ 'font': [] }],
+  [{ 'align': [] }],
+
+  ['clean']                                         // remove formatting button
 ];
 
-const TextEditor = () => {
-  const [text, setText] = useState('');
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isUnderline, setIsUnderline] = useState(false);
-  const [textColor, setTextColor] = useState('#000000');
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [selectedFontStyle, setSelectedFontStyle] = useState(fontStyles[0]);
+const Editor = ({ id }: { id: string }) => {
+  const [quill, setQuill] = useState<Quill | null>(null);
+  const docRef = ref(database, `documents/${id}/content`);
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(event.target.value);
-  };
+  useEffect(() => {
+    const quillServer = new Quill('#container', {
+      theme: 'snow',
+      modules: { toolbar: toolbarOptions },
+    });
+    quillServer.disable();
+    quillServer.setText('Loading the document...');
+    setQuill(quillServer);
+  }, []);
 
-  const handleBoldClick = () => {
-    setIsBold(!isBold);
-  };
+  useEffect(() => {
+    onValue(docRef, (snapshot) => {
+      const document = snapshot.val();
+      quill?.setContents(document);
+      quill?.enable();
+    });
+  }, [quill, docRef]);
 
-  const handleItalicClick = () => {
-    setIsItalic(!isItalic);
-  };
+  useEffect(() => {
+    if (quill === null) return;
 
-  const handleUnderlineClick = () => {
-    setIsUnderline(!isUnderline);
-  };
+    const handleChange = (delta: Quill.Delta, oldData: Quill.Delta, source: string) => {
+      if (source !== 'user') return;
 
-  const handleTextColorChange = (color: any) => {
-    setTextColor(color.hex);
-  };
+      set(docRef, quill.getContents());
+    };
 
-  const handleColorPickerClick = () => {
-    setShowColorPicker(!showColorPicker);
-  };
+    quill?.on('text-change', handleChange);
 
-  const handleFontStyleChange = (selectedOption: any) => {
-    setSelectedFontStyle(selectedOption);
-  };
+    return () => {
+      quill?.off('text-change', handleChange);
+    };
+  }, [quill, docRef]);
 
   return (
-    <div className="p-4">
-      <div className="space-x-2 bg-white mb-2 flex flex-row sticky top-0">
-        <button
-          className={`font-bold ${isBold ? 'bg-gray-300' : ''}`}
-          onClick={handleBoldClick}
-        >
-          B
-        </button>
-        <button
-          className={`italic ${isItalic ? 'bg-gray-300' : ''}`}
-          onClick={handleItalicClick}
-        >
-          I
-        </button>
-        <button
-          className={`underline ${isUnderline ? 'bg-gray-300' : ''}`}
-          onClick={handleUnderlineClick}
-        >
-          U
-        </button>
-        <button onClick={handleColorPickerClick}>Color</button>
-        {showColorPicker && (
-          <ChromePicker color={textColor} onChange={handleTextColorChange} />
-        )}
-
-        <Select
-          value={selectedFontStyle}
-          options={fontStyles}
-          onChange={handleFontStyleChange}
-          styles={{
-            control: (provided) => ({
-              ...provided,
-              minWidth: '100px',
-              maxWidth : '150px'
-            }),
-          }}
-        />
-      </div>
-      <textarea
-        className={`w-full p-2 border h-screen border-gray-300 rounded-lg focus:outline-none resize-none ${
-          isBold ? 'font-bold' : ''
-        } ${isItalic ? 'italic' : ''} ${isUnderline ? 'underline' : ''}`}
-        style={{
-          color: textColor,
-          fontFamily: selectedFontStyle.value,
-        }}
-        value={text}
-        onChange={handleChange}
-      />
+    <div>
+      <div className="container" id="container"></div>
     </div>
   );
 };
 
-export default TextEditor;
+export default Editor;

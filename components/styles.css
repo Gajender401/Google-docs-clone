@@ -1,0 +1,17 @@
+#toolbar {
+    background-color: #edf2fa;
+    border-radius: 20px;
+    border: none;
+}
+
+.ql-container.ql-snow {
+    border: none;
+    outline: none;
+    font-size: 20px;
+}
+
+.ql-toolbar.ql-snow {
+    border: none;
+    outline: none;
+    width: 100%;
+}

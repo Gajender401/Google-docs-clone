@@ -1,6 +1,6 @@
 import Head from 'next/head';
 
-import TextEditor from '@/components/editor';
+import Docs from './docs';
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <TextEditor />
+        <Docs />
       </main>
     </div>
   )
