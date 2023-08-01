@@ -9,7 +9,6 @@ import {
   addDoc,
   collection,
   doc,
-  updateDoc,
   onSnapshot,
   query,
   where,
@@ -31,7 +30,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
 export const database = getDatabase(app)
 
-const firestore = getFirestore(app)
+export const firestore = getFirestore(app)
 
 let provider = new GoogleAuthProvider();
 
@@ -51,15 +50,6 @@ export const logout = () => {
 };
 
 
-
-export const createDoc = (payload: payloadType) => {
-  addDoc(docs, {
-    ...payload,
-    userId: auth.currentUser?.uid,
-    userName: auth.currentUser?.displayName,
-  });
-};
-
 export const getDocuments = (setDocs: any) => {
   let docQuery = query(docs, where("userId", "==", auth.currentUser?.uid));
   onSnapshot(docQuery, (response) => {
@@ -71,10 +61,6 @@ export const getDocuments = (setDocs: any) => {
   });
 };
 
-export const editDoc = (payload: any, id: string) => {
-  let docToEdit = doc(docs, id);
-  updateDoc(docToEdit, payload, id);
-};
 
 export const getCurrentDoc = async (id: string, setCurrentDocument: any) => {
   let docToGet = doc(docs, id);

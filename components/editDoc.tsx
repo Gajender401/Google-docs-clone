@@ -3,87 +3,86 @@
 import { useState, useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
 import EditorToolbar, { modules, formats } from "@/components/toolbar";
-import { editDoc, getCurrentDoc } from "@/components/firebase";
-import { Input } from "antd";
+import { getCurrentDoc } from "@/components/firebase";
 import 'quill/dist/quill.snow.css';
 import './styles.css'
+import { firestore } from "@/components/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import Topbar from "./topbar";
+import useCheckAuth from "@/src/hook";
 
 interface functionInterface {
   id: string;
-  handleEdit: () => void;
 }
 
 export default function EditDoc({ id }: functionInterface) {
   let quillRef = useRef<any>(null);
   const [value, setValue] = useState("");
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("")
   const [isSaving, setIsSaving] = useState("");
   const [currentDocument, setCurrentDocument] = useState({
     title: "",
     value: "",
   });
-  function editDocument() {
-    let payload = {
-      value,
-      title,
-    };
-    editDoc(payload, id);
-    setIsSaving("Saving..");
-  }
 
-  const getCurrentDocument = () => {
-    if (id) {
-      getCurrentDoc(id, setCurrentDocument);
-    }
-  };
+  const { userData } = useCheckAuth();
+
 
   useEffect(() => {
     setIsSaving("");
     const debounced = setTimeout(() => {
-      editDocument();
+      let docSnap = doc(firestore, 'docs', id);
+      updateDoc(docSnap, {
+        value: value,
+        title: title
+      });
+      setIsSaving("Saving..");
     }, 500);
 
     return () => {
       clearTimeout(debounced);
     };
-  }, [value, title]);
+  }, [value,title]);
+
 
   useEffect(() => {
-    getCurrentDocument();
+    if (id) {
+      getCurrentDoc(id, setCurrentDocument);
+    }
     quillRef.current.focus();
   }, []);
 
+
   useEffect(() => {
-    setTitle(currentDocument?.title);
     setValue(currentDocument?.value);
+    setTitle(currentDocument?.title)
   }, [currentDocument]);
 
-  return (
-    <div className=" flex items-center flex-col">
-      {/* <p className="saving-conf">{isSaving}</p> */}
-      <Input
-        value={title}
-        className=" bg-transparent outline-none border border-gray-300 text-gray-800 w-90"
-        onChange={(event: any) => setTitle(event?.target.value)}
-        placeholder="Enter the Title"
-      />
-      <div className=" mt-30 text-center w-full">
-        <div className="w-[98%] m-auto" >
-          <EditorToolbar />
-        </div>
-        <div style={{border:"1px solid #d4d6d9"}} className="mt-5 w-[90%] h-screen m-auto">
-          <ReactQuill
-            className="react-quill"
-            theme="snow"
-            ref={quillRef}
-            value={value}
-            onChange={setValue}
-            modules={modules}
-            formats={formats}
-          />
-        </div>
 
+
+  return (
+    <>
+      <Topbar title={title} setTitle={setTitle} photoURL={userData?.photoURL} />
+      <div className=" flex items-center flex-col">
+        <div className=" mt-30 text-center w-full">
+          <div className="w-[98%] m-auto" >
+            <EditorToolbar />
+          </div>
+          <div style={{ border: "1px solid #d4d6d9" }} className="mt-5 w-[90%] h-screen m-auto">
+            <ReactQuill
+              className="react-quill"
+              theme="snow"
+              ref={quillRef}
+              value={value}
+              onChange={setValue}
+              modules={modules}
+              formats={formats}
+            />
+          </div>
+
+        </div>
       </div>
-    </div>
+    </>
+
   );
 }

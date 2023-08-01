@@ -3,12 +3,10 @@
 import { getDocuments } from "@/components/firebase";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-type OpenDocType = {
-  openDoc: (id: string, value: string, title: string) => void;
-};
 
-export default function DocsList({ openDoc }: OpenDocType) {
+export default function DocsList() {
   const [docs, setDocs] = useState([
     {
       title: "",
@@ -17,9 +15,13 @@ export default function DocsList({ openDoc }: OpenDocType) {
       value: "",
     },
   ]);
+
+  const router = useRouter()
+
   const getDocs = async () => {
     await getDocuments(setDocs);
   };
+
   useEffect(() => {
     getDocs();
   }, []);
@@ -29,7 +31,7 @@ export default function DocsList({ openDoc }: OpenDocType) {
       {docs.map((doc) => {
         return (
           <div
-            onClick={() => openDoc(doc.id, doc.value, doc.title)}
+            onClick={() => router.push(`document/${doc.id}`)}
             className=" h-[250px] w-[200px]  mt-10 cursor-pointer border relative border-gray-300"
           >
             <p
