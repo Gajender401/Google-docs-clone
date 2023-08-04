@@ -6,7 +6,6 @@ import { getFirestore } from "firebase/firestore";
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 import {
-  addDoc,
   collection,
   doc,
   onSnapshot,
@@ -32,14 +31,9 @@ export const database = getDatabase(app)
 
 export const firestore = getFirestore(app)
 
-let provider = new GoogleAuthProvider();
+const provider = new GoogleAuthProvider();
 
-let docs = collection(firestore, "docs");
-
-type payloadType = {
-  value: string;
-  title: string;
-};
+const docs = collection(firestore, "docs");
 
 export const loginWithGoogle = () => {
   signInWithPopup(auth, provider);

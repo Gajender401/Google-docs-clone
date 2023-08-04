@@ -1,22 +1,31 @@
 'use client'
 
-import { getDocuments } from "@/components/firebase";
+import { getDocuments } from "@/src/firebase";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { BsThreeDotsVertical } from 'react-icons/bs'
+import { Dropdown } from "antd";
+import { firestore } from '@/src/firebase'
+import { doc, deleteDoc } from "firebase/firestore";
 
+
+interface Document {
+  title: string;
+  id: string;
+  userName: string;
+  value: string;
+}
 
 export default function DocsList() {
-  const [docs, setDocs] = useState([
-    {
-      title: "",
-      id: "",
-      userName: "",
-      value: "",
-    },
-  ]);
+
+  const [docs, setDocs] = useState<Document[]>([]);
 
   const router = useRouter()
+
+  const deleteItem = async (docId: string) => {
+    await deleteDoc(doc(firestore, "docs", docId));
+  }
 
   const getDocs = async () => {
     await getDocuments(setDocs);
@@ -31,22 +40,46 @@ export default function DocsList() {
       {docs.map((doc) => {
         return (
           <div
-            onClick={() => router.push(`document/${doc.id}`)}
             className=" h-[250px] w-[200px]  mt-10 cursor-pointer border relative border-gray-300"
           >
             <p
+              onClick={() => router.push(`document/${doc.id}`)}
               className="text-xs text-center p-2"
               dangerouslySetInnerHTML={{
                 __html: `${doc.value.substring(0, 100)}`,
               }}
             ></p>
 
-            <p className="w-full p-3 flex absolute bottom-0 justify-center items-center gap-5 text-sm bg-white p-0 m-0 border-t border-gray-300 font-semibold">
-              <Image width={25} height={25} src='/docsIcon.png' alt="Document icon" />
-              {doc.title.length > 17
-                ? `${doc.title.substring(0, 17)}...`
-                : doc.title}
+            <p className="w-full p-3 flex absolute bottom-0 items-center justify-between text-sm bg-white border-t border-gray-300 ">
+              <div
+                onClick={() => router.push(`document/${doc.id}`)}
+                className="flex gap-2 items-center"
+              >
+
+                <Image width={25} height={25} src='/docsIcon.png' alt="Document icon" />
+
+                {doc.title.length > 17
+                  ? `${doc.title.substring(0, 17)}...`
+                  : doc.title
+                }
+              </div>
+
+              <Dropdown placement="bottomRight" menu={{
+                items: [
+                  {
+                    key: "1",
+                    label: (
+                      <p onClick={()=>deleteItem(doc.id)} className="menu-item" >
+                        Delete
+                      </p>
+                    ),
+                  },
+                ],
+              }}>
+                <BsThreeDotsVertical size={20} color="grey" />
+              </Dropdown>
             </p>
+
           </div>
         );
       })}

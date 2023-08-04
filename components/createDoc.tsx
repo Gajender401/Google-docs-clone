@@ -1,17 +1,22 @@
 'use client'
 import { useState } from "react";
-import { auth, firestore } from "@/components/firebase";
-import CommonModal from "@/components/modal";
+import { auth, firestore } from "@/src/firebase";
 import { Input } from "antd";
 import Image from "next/image";
 import { collection, addDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { Modal } from "antd";
 
 export default function CreateDoc() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
 
   const router = useRouter()
+
+  const handleOk = () => {
+    createDocument();
+    setIsModalOpen(false);
+  };
 
 
   const createDocument = async () => {
@@ -45,17 +50,19 @@ export default function CreateDoc() {
         <p className=" mt-2">Blank</p>
       </div>
 
-      <CommonModal
-        createDocument={createDocument}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+      <Modal
+        title="Add a Document"
+        open={isModalOpen}
+        onOk={handleOk}
+        centered
+        onCancel={()=>setIsModalOpen(false)}
       >
         <Input
           value={title}
           onChange={(event: any) => setTitle(event?.target.value)}
           placeholder="Enter the Title"
         />
-      </CommonModal>
+      </Modal>
     </div>
   );
 }

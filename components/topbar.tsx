@@ -1,10 +1,11 @@
 'use client'
 
-import CommonDropdown from "@/components/dropdown";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Input } from "antd";
+import type { MenuProps } from "antd";
+import { Dropdown } from "antd";
+import {logout} from '@/src/firebase'
 
 interface TopbarProps {
   photoURL: string;
@@ -12,11 +13,24 @@ interface TopbarProps {
   setTitle?: any
 }
 
+
+
 export default function Topbar({ photoURL, title, setTitle }: TopbarProps) {
 
   const pathname = usePathname()
   const path = pathname.split('/')[1]
 
+
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: (
+        <p onClick={()=>logout()} className="menu-item">
+          Log out
+        </p>
+      ),
+    },
+  ];
 
   return (
     <div className=" bg-white flex items-center justify-between py-3 px-5 ">
@@ -45,9 +59,9 @@ export default function Topbar({ photoURL, title, setTitle }: TopbarProps) {
 
 
       </div>
-      <CommonDropdown>
+      <Dropdown placement="bottomRight" menu={{ items }}>
         <Image className="rounded-full" height={35} width={35} src={photoURL} alt="user" />
-      </CommonDropdown>
+      </Dropdown>
 
     </div>
   );

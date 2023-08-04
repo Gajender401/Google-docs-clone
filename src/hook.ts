@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
-import { auth } from "@/components/firebase";
+import { auth } from "@/src/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function useCheckAuth() {

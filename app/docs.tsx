@@ -1,7 +1,8 @@
 'use client'
-import { loginWithGoogle } from "@/components/firebase";
+import { loginWithGoogle } from "@/src/firebase";
 import useCheckAuth from "@/src/hook";
 import Document from "@/components/documents";
+import {FcGoogle} from 'react-icons/fc'
 
 const Docs: React.FC = () => {
 
@@ -10,8 +11,9 @@ const Docs: React.FC = () => {
   return (
     <>
       {!isAuthenticated ? (
-        <div className="docs-container">
-            <button onClick={()=> loginWithGoogle()} className="flex items-center justify-center h-screen" >
+        <div className="flex h-screen w-screen items-center justify-center">
+            <button onClick={()=> loginWithGoogle()} className="border-sky-500 p-1 flex flex-row items-center " >
+              <FcGoogle size={18} />
                 Login
             </button>
         </div>

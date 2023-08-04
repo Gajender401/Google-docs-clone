@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
-import { database } from './firebase'; // Import the Firebase database
+import { database } from '../src/firebase'; // Import the Firebase database
 import { get, ref, onValue, set } from 'firebase/database';
 
 const toolbarOptions = [

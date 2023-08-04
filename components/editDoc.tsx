@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
 import EditorToolbar, { modules, formats } from "@/components/toolbar";
-import { getCurrentDoc } from "@/components/firebase";
+import { getCurrentDoc } from "@/src/firebase";
 import 'quill/dist/quill.snow.css';
 import './styles.css'
-import { firestore } from "@/components/firebase";
+import { firestore } from "@/src/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import Topbar from "./topbar";
 import useCheckAuth from "@/src/hook";
