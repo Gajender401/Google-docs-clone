@@ -19,38 +19,40 @@ export default function EditDoc({ id }: functionInterface) {
   let quillRef = useRef<any>(null);
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("")
-  const [isSaving, setIsSaving] = useState("");
   const [currentDocument, setCurrentDocument] = useState({
     title: "",
     value: "",
   });
+  const [state, setState] = useState(false)
 
   const { userData } = useCheckAuth();
 
 
   useEffect(() => {
-    setIsSaving("");
-    const debounced = setTimeout(() => {
-      let docSnap = doc(firestore, 'docs', id);
-      updateDoc(docSnap, {
-        value: value,
-        title: title
-      });
-      setIsSaving("Saving..");
-    }, 500);
+    if (state) {
+      const debounced = setTimeout(() => {
+        const docSnap = doc(firestore, 'docs', id);
+        updateDoc(docSnap, {
+          value: value,
+          title: title
+        });
+      }, 500);
 
-    return () => {
-      clearTimeout(debounced);
-    };
-  }, [value,title]);
+      return () => {
+        clearTimeout(debounced);
+      };
+    }
+
+  }, [value, title, id]);
 
 
   useEffect(() => {
     if (id) {
       getCurrentDoc(id, setCurrentDocument);
+      setState(true)
     }
     quillRef.current.focus();
-  }, []);
+  }, [id]);
 
 
   useEffect(() => {

@@ -43,16 +43,19 @@ export default function DocsList() {
             className=" h-[250px] w-[200px]  mt-10 cursor-pointer border relative border-gray-300"
           >
             <p
-              onClick={() => router.push(`document/${doc.id}`)}
               className="text-xs text-center p-2"
               dangerouslySetInnerHTML={{
                 __html: `${doc.value.substring(0, 100)}`,
               }}
             ></p>
 
+            <div
+              onClick={() => router.push(`document/${doc.id}`)}
+              className="absolute z-10 h-[200px] top-0 w-full" 
+            />
+
             <p className="w-full p-3 flex absolute bottom-0 items-center justify-between text-sm bg-white border-t border-gray-300 ">
               <div
-                onClick={() => router.push(`document/${doc.id}`)}
                 className="flex gap-2 items-center"
               >
 
@@ -69,7 +72,7 @@ export default function DocsList() {
                   {
                     key: "1",
                     label: (
-                      <p onClick={()=>deleteItem(doc.id)} className="menu-item" >
+                      <p onClick={() => deleteItem(doc.id)} className="menu-item" >
                         Delete
                       </p>
                     ),
