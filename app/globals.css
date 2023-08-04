@@ -8,37 +8,3 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-button {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-  cursor: pointer;
-}
-
-input[type='color'] {
-  display: none; /* Hide the default color picker */
-}
-
-/* Optional styles for the react-color ChromePicker */
-.react-color-picker {
-  position: absolute;
-  z-index: 1;
-  background: #fff;
-  border-radius: 4px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-}
-
-button:focus,
-input[type='color']:focus {
-  outline: none;
-}
-
-button:hover,
-input[type='color']:hover {
-  border-color: #ccc;
-}
-
-button:active,
-input[type='color']:active {
-  background-color: #ccc;
-}

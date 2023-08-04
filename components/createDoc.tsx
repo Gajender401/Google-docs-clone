@@ -5,7 +5,25 @@ import { Input } from "antd";
 import Image from "next/image";
 import { collection, addDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { Modal } from "antd";
+import { Modal,Button } from "antd";
+
+
+
+const CustomButton = (props:any) => {
+  const { children, ...rest } = props;
+
+  const customStyles = {
+    backgroundColor: 'white', 
+    borderColor: "gray", 
+    color: "black",
+  };
+
+  return (
+    <Button style={customStyles} {...rest}>
+      {children}
+    </Button>
+  );
+};
 
 export default function CreateDoc() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,7 +35,6 @@ export default function CreateDoc() {
     createDocument();
     setIsModalOpen(false);
   };
-
 
   const createDocument = async () => {
 
@@ -53,8 +70,11 @@ export default function CreateDoc() {
       <Modal
         title="Add a Document"
         open={isModalOpen}
-        onOk={handleOk}
-        centered
+        footer={[
+          <CustomButton key="ok" onClick={handleOk}>
+            OK
+          </CustomButton>,
+        ]}
         onCancel={()=>setIsModalOpen(false)}
       >
         <Input
