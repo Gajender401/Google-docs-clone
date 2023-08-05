@@ -3,29 +3,34 @@
 import { useState, useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
 import EditorToolbar, { modules, formats } from "@/components/toolbar";
-import { getCurrentDoc } from "@/src/firebase";
 import 'quill/dist/quill.snow.css';
 import './styles.css'
 import { firestore } from "@/src/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import Topbar from "./topbar";
 import useCheckAuth from "@/src/hook";
+import { onSnapshot } from "firebase/firestore";
 
-interface functionInterface {
-  id: string;
-}
 
-export default function EditDoc({ id }: functionInterface) {
+export default function EditDoc({ id }: {id:string}) {
   let quillRef = useRef<any>(null);
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("")
-  const [currentDocument, setCurrentDocument] = useState({
+  const [currentDocument, setCurrentDocument] = useState<any>({
     title: "",
     value: "",
   });
   const [state, setState] = useState(false)
 
   const { userData } = useCheckAuth();
+
+
+  const getCurrentDoc = async (id: string) => {
+    const docRef = doc(firestore, "docs", id);
+    await onSnapshot(docRef, (doc) => {
+      setCurrentDocument(doc.data());
+    });
+  };
 
 
   useEffect(() => {
@@ -48,7 +53,7 @@ export default function EditDoc({ id }: functionInterface) {
 
   useEffect(() => {
     if (id) {
-      getCurrentDoc(id, setCurrentDocument);
+      getCurrentDoc(id);
       setState(true)
     }
     quillRef.current.focus();

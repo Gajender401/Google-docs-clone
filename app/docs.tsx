@@ -6,7 +6,7 @@ import {FcGoogle} from 'react-icons/fc'
 
 const Docs: React.FC = () => {
 
-  let { isAuthenticated, userData } = useCheckAuth();
+  const { isAuthenticated, userData } = useCheckAuth();
   
   return (
     <>

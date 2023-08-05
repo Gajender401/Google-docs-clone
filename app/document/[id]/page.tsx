@@ -1,5 +1,6 @@
-import React from 'react'
+'use client'
 import EditDoc from '@/components/editDoc'
+import ProtectedRoutes from '@/src/ProtectedRoute'
 
 const Page = ({ params }: { params: { id: string } }) => {
     return (
@@ -9,4 +10,4 @@ const Page = ({ params }: { params: { id: string } }) => {
   )
 }
 
-export default Page
+export default ProtectedRoutes(Page)

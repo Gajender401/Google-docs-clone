@@ -1,14 +1,13 @@
 'use client'
 
-import { getDocuments } from "@/src/firebase";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { Dropdown } from "antd";
-import { firestore } from '@/src/firebase'
-import { doc, deleteDoc } from "firebase/firestore";
-
+import { firestore,auth } from '@/src/firebase'
+import { doc, deleteDoc, collection } from "firebase/firestore";
+import {onSnapshot,query,where} from "firebase/firestore";
 
 interface Document {
   title: string;
@@ -28,7 +27,15 @@ export default function DocsList() {
   }
 
   const getDocs = async () => {
-    await getDocuments(setDocs);
+    const docRef = query(collection(firestore, "docs"), where("userId", "==", auth.currentUser?.uid));
+    onSnapshot(docRef, (res) => {
+      setDocs(
+        res.docs.map((doc) => {
+          const data = doc.data() as Document;
+          return { ...data, id: doc.id };
+        })
+      );
+    });
   };
 
   useEffect(() => {
